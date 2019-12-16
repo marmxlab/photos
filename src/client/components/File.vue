@@ -3,9 +3,11 @@
     <v-flex class="file__preview">
       <v-icon v-if="file.d" size="50">mdi-folder-outline</v-icon>
       <v-img
+        ref="img"
         v-else-if="isImageFile"
         :src="imageSrc"
         max-width="200"
+        @error="onImageError"
       >
         <template v-slot:placeholder>
           <v-row
@@ -45,6 +47,15 @@
       const { file: { n }, siteSecret } = this;
       const filePath = (path === '/' ? '' : (path as string).substr(1) + '/') + n;
       return '/thumbnails/' + filePath + (siteSecret ? `?_secret=${siteSecret}` : '');
+    }
+
+    onImageError() {
+      const MIN_TIMEOUT = 3000;
+      const MAX_TIMEOUT = 5000;
+      const randomTimeout =  Math.floor(Math.random() * (MAX_TIMEOUT - MIN_TIMEOUT)) + MIN_TIMEOUT;
+      setTimeout(() => {
+        (this.$refs.img as any).loadImage();
+      }, randomTimeout)
     }
   }
 </script>
