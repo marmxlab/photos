@@ -13,8 +13,8 @@ class ImageManager {
   }
 
   generateThumbnails(rPath: string) {
-    const targetPath = process.env.ROOT_FOLDER + rPath;
-    const thumbnailsPath = process.env.THUMBNAIL_FOLDER + rPath;
+    const targetPath = process.env.ROOT_FOLDER + (rPath !== '/' ? rPath : '');
+    const thumbnailsPath = process.env.THUMBNAIL_FOLDER + (rPath !== '/' ? rPath : '');
     const imageFileFilter = (ds: Dirent[]) => ds.filter((d) => {
       const supportedExtensions = ['.bmp', '.jpg', '.jpeg', '.png', '.tiff'];
       return !d.isDirectory() && supportedExtensions.indexOf(path.extname(d.name).toLowerCase()) >= 0;
@@ -29,7 +29,7 @@ class ImageManager {
           ds.map((d) => new Promise((resolve) => {
             const srcPath = `${targetPath}/${d.name}`;
             const dstPath = `${thumbnailsPath}/${d.name}`;
-            return queue.addJob(srcPath, dstPath);
+            resolve(queue.addJob(srcPath, dstPath));
           }))
         )
       })
