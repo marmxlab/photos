@@ -14,12 +14,12 @@
   "dependencies": {
     "bull": "^3.12.1",
     "dotenv": "^8.2.0",
+    "ioredis": "^4.14.1",
     "jimp": "^0.9.3",
     "koa": "^2.11.0",
     "koa-mount": "^4.0.0",
     "koa-router": "^7.4.0",
     "koa-static": "^5.0.0",
-    "redis": "^2.8.0",
     "vuetify": "^2.1.0"
   },
   "devDependencies": {
@@ -28,7 +28,6 @@
     "@types/koa-router": "^7.0.42",
     "@types/koa-static": "^4.0.1",
     "@types/node": "^12.12.14",
-    "@types/redis": "^2.8.14",
     "@vue/cli-plugin-babel": "^4.1.0",
     "@vue/cli-plugin-eslint": "^4.1.0",
     "@vue/cli-plugin-router": "^4.1.0",
