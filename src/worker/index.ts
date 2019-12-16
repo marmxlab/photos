@@ -1,9 +1,16 @@
+require('dotenv').config();
+
 import {DoneCallback, Job} from "bull";
 
 const fs = require('fs');
 import jimp from "jimp";
 const Bull = require('bull');
-const queue = new Bull('thumbnail-generations');
+const queue = new Bull('thumbnail-generations', {
+  redis: {
+    port: process.env.REDIS_PORT || 6379,
+    host: process.env.REDIS_HOST || 'localhost',
+  }
+});
 
 queue.process(async (job: Job<{ srcPath: string, dstPath: string, overwrite? : boolean }>) => {
   const { srcPath, dstPath, overwrite } = job.data;
