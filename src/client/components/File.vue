@@ -43,8 +43,18 @@
 </script>
 <style lang="sass" scoped>
   .file
+    position: relative
     width: 200px
     height: 220px
+    background-color: white
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1)
+    border-radius: 4px
+    overflow: hidden
+    &:hover
+      cursor: pointer
+      transform: scale(1.2)
+      box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23)
+      z-index: 1
     &__preview
       justify-content: center
       align-items: center
