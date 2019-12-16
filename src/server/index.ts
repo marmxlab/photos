@@ -30,6 +30,7 @@ if(process.env.AUTH_SECRET) {
 const rootPath = process.env.ROOT_FOLDER;
 const thumbnailsPath = process.env.THUMBNAIL_FOLDER;
 
+app.use(serve('public'));
 app.use(mount('/images', serve(rootPath)));
 app.use(mount('/thumbnails', serve(thumbnailsPath)));
 app.use(router.routes()).use(router.allowedMethods());

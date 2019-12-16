@@ -4,7 +4,7 @@
   "description": "",
   "author": "",
   "scripts": {
-    "build": "vue-cli-service build --dest dist/public src/client/main.ts && tsc",
+    "build": "vue-cli-service build --dest dist/server/public src/client/main.ts && tsc",
     "server-start": "tsc && node dist/server/index.js",
     "worker": "tsc --outDir dist/worker src/worker/index.ts --esModuleInterop && node dist/worker/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
