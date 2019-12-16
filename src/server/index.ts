@@ -10,7 +10,6 @@ const app = new Koa();
 const mount = require('koa-mount');
 const serve = require('koa-static');
 
-
 if (!process.env.ROOT_FOLDER || !process.env.THUMBNAIL_FOLDER) {
   throw new Error('ROOT_FOLDER and THUMBNAIL_FOLDER must be specified in environment variables.')
 }

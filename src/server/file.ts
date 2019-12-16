@@ -13,8 +13,6 @@ export default class File {
     const targetPath = process.env.ROOT_FOLDER + path;
     const thumbnailsPath = process.env.THUMBNAIL_FOLDER;
 
-
-
     if (targetPath === thumbnailsPath) {
       ctx.status = 500;
       ctx.message = 'Thumbnail folder is not allowed to access.';
@@ -24,7 +22,7 @@ export default class File {
     const isProcessing = await redis.get(redisProcessingKey);
     if (!isProcessing) {
       ImageManager.generateThumbnails(path);
-      redis.set(redisProcessingKey, 1, 'EX', 1800);
+      await redis.set(redisProcessingKey, 1, 'EX', 1800);
     }
 
     return fs
