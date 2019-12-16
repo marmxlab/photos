@@ -5,7 +5,7 @@
         :file="file"
         :key="i"
         class="browse__file ma-1"
-        @click="onFileClick($event, i)"
+        @click="onFileClick"
       ></file>
     </template>
 
@@ -16,7 +16,7 @@
           <v-carousel-item
             v-for="(file,i) in imageFiles"
             :key="i"
-            :src="`/images/${file.n}?_secret=${siteSecret}`"
+            :src="getImageSrc(file)"
           >
             <template v-slot:placeholder>
               <v-row
@@ -30,7 +30,7 @@
           </v-carousel-item>
         </v-carousel>
 
-        <v-btn top right large icon flat dark absolute @click="showCarouselDialog = false">
+        <v-btn top right large icon text dark absolute @click="showCarouselDialog = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-card>
@@ -133,13 +133,20 @@
         })
     }
 
-    onFileClick(file: FileEntry, index: number) {
+    onFileClick(file: FileEntry) {
       if (FileUtil.isImageFile(file)) {
-        this.carouselIndex = index;
+        this.carouselIndex = this.imageFiles.indexOf(file);
         this.showCarouselDialog = true;
       } else if (file.d) {
         this.$router.push({ query: { path: '/' + file.n } });
       }
+    }
+
+    getImageSrc(file: FileEntry): string {
+      const { query: { path } } = this.$route;
+      const { siteSecret } = this;
+      const { n } = file;
+      return `/images/${path}/${n}` + (siteSecret ? `?_secret=${siteSecret}` : '');
     }
   }
 </script>

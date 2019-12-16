@@ -4,7 +4,7 @@
       <v-icon v-if="file.d" size="50">mdi-folder-outline</v-icon>
       <v-img
         v-else-if="isImageFile"
-        :src="`/thumbnails/${file.n}?_secret=${siteSecret}`"
+        :src="imageSrc"
         max-width="200"
       >
         <template v-slot:placeholder>
@@ -38,6 +38,12 @@
 
     get isImageFile(): boolean {
       return FileUtil.isImageFile(this.file);
+    }
+
+    get imageSrc(): string {
+      const { query: { path } } = this.$route;
+      const { file: { n }, siteSecret } = this;
+      return `/thumbnails/${path}/${n}` + (siteSecret ? `?_secret=${siteSecret}` : '');
     }
   }
 </script>
