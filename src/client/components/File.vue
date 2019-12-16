@@ -43,7 +43,8 @@
     get imageSrc(): string {
       const { query: { path } } = this.$route;
       const { file: { n }, siteSecret } = this;
-      return `/thumbnails${path}/${n}` + (siteSecret ? `?_secret=${siteSecret}` : '');
+      const filePath = (path === '/' ? '' : (path as string).substr(1) + '/') + n;
+      return '/thumbnails/' + filePath + (siteSecret ? `?_secret=${siteSecret}` : '');
     }
   }
 </script>

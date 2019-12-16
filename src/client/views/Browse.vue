@@ -85,18 +85,25 @@
         .getFileList()
         .catch((e) => {
           console.error(e);
-        })
-    }
-
-    created() {
-      this
-        .getFileList()
-        .catch((e) => {
-          console.error(e);
           if (e.response.status === 401) {
             this.showSecretDialog = true;
           }
         })
+    }
+
+    created() {
+      if (!this.$route.query.path) {
+        this.$router.replace({ query: { path: '/' } });
+      } else {
+        this
+          .getFileList()
+          .catch((e) => {
+            console.error(e);
+            if (e.response.status === 401) {
+              this.showSecretDialog = true;
+            }
+          })
+      }
     }
 
     get imageFiles(): FileEntry[] {
@@ -119,7 +126,7 @@
           });
           this.files = response.data;
           return response.data;
-        });
+        })
     }
 
     proceedWithSecret() {
@@ -142,7 +149,8 @@
         this.showCarouselDialog = true;
       } else if (file.d) {
         const { query: { path } } = this.$route;
-        this.$router.push({ query: { path: path + '/' + file.n } });
+        const nextPath = path === '/' ? `/${file.n}` : `${path}/${file.n}`;
+        this.$router.push({ query: { path: nextPath } });
       }
     }
 
@@ -150,7 +158,8 @@
       const { query: { path } } = this.$route;
       const { siteSecret } = this;
       const { n } = file;
-      return `/images${path}/${n}` + (siteSecret ? `?_secret=${siteSecret}` : '');
+      const filePath = (path === '/' ? '' : (path as string).substr(1) + '/') + n;
+      return '/images/' + filePath + (siteSecret ? `?_secret=${siteSecret}` : '');
     }
   }
 </script>
