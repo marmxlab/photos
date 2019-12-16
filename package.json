@@ -5,25 +5,30 @@
   "author": "",
   "scripts": {
     "build": "vue-cli-service build --dest dist/public src/client/main.ts && tsc",
-    "server-start": "tsc && node dist/index.js",
+    "server-start": "tsc && node dist/server/index.js",
+    "worker": "tsc --outDir dist/worker src/worker/index.ts --esModuleInterop && node dist/worker/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "ui-serve": "vue-cli-service serve src/client/main.ts"
   },
   "main": "index.js",
   "dependencies": {
+    "bull": "^3.12.1",
     "dotenv": "^8.2.0",
     "jimp": "^0.9.3",
     "koa": "^2.11.0",
     "koa-mount": "^4.0.0",
     "koa-router": "^7.4.0",
     "koa-static": "^5.0.0",
+    "redis": "^2.8.0",
     "vuetify": "^2.1.0"
   },
   "devDependencies": {
+    "@types/bull": "^3.10.6",
     "@types/koa": "^2.11.0",
     "@types/koa-router": "^7.0.42",
     "@types/koa-static": "^4.0.1",
     "@types/node": "^12.12.14",
+    "@types/redis": "^2.8.14",
     "@vue/cli-plugin-babel": "^4.1.0",
     "@vue/cli-plugin-eslint": "^4.1.0",
     "@vue/cli-plugin-router": "^4.1.0",

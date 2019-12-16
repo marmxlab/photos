@@ -2,26 +2,36 @@ import {BaseContext} from "koa";
 import {Dirent} from "fs";
 import ImageManager from "./image-manager";
 import FileEntry from "./models/FileEntry";
+import redis from './redis';
 
 const fs = require('fs');
 
 export default class File {
-  static getFileList(ctx: BaseContext, next: () => Promise<void>) {
+  static async getFileList(ctx: BaseContext, next: () => Promise<void>) {
     const { path } = ctx.query;
-
-    // TODO: path validation
-    // TODO: disallow thumbnail folder access
-
+    const redisProcessingKey = `photos:processing:${path}`;
     const targetPath = process.env.ROOT_FOLDER + path;
     const thumbnailsPath = process.env.THUMBNAIL_FOLDER;
 
-    ImageManager.generateThumbnails(path);
+
+
+    if (targetPath === thumbnailsPath) {
+      ctx.status = 500;
+      ctx.message = 'Thumbnail folder is not allowed to access.';
+      return next();
+    }
+
+    const isProcessing = await redis.get(redisProcessingKey);
+    if (!isProcessing) {
+      ImageManager.generateThumbnails(path);
+      redis.set(redisProcessingKey, 1, 'EX', 1800);
+    }
 
     return fs
       .promises
       .readdir(targetPath, { withFileTypes: true })
       .then((ds: Dirent[]) =>
-        ds.filter((d) => thumbnailsPath !== `${targetPath}/${d.name}`)
+        ds.filter((d) => `${targetPath}${d.name}` !== thumbnailsPath)
       ) // filter out the thumbnail folder
       .then((ds: Dirent[]) =>
         ds.map((d): FileEntry => ({ n: d.name, d: d.isDirectory() }))
