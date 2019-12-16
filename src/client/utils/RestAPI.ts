@@ -13,7 +13,7 @@ export default class RestAPI {
   }
 
   static getFileList(path: string): AxiosPromise<FileEntry[]> {
-    const config: any = { params: { path: `/${path}` } };
+    const config: any = { params: { path } };
     if (this.siteSecret) {
       config.headers = { 'X-Photos-Secret': this.siteSecret };
     }

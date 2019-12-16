@@ -6,7 +6,17 @@
         v-else-if="isImageFile"
         :src="`/thumbnails/${file.n}?_secret=${siteSecret}`"
         max-width="200"
-      ></v-img>
+      >
+        <template v-slot:placeholder>
+          <v-row
+            class="fill-height ma-0"
+            align="center"
+            justify="center"
+          >
+            <v-progress-circular indeterminate color="primary"></v-progress-circular>
+          </v-row>
+        </template>
+      </v-img>
       <v-icon v-else size="50">mdi-file-outline</v-icon>
     </v-flex>
     <div class="file__name">{{ file.n }}</div>

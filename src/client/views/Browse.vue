@@ -5,19 +5,29 @@
         :file="file"
         :key="i"
         class="browse__file ma-1"
-        @click="onFileClick"
+        @click="onFileClick($event, i)"
       ></file>
     </template>
 
     <!-- Carousel Dialog -->
     <v-dialog v-model="showCarouselDialog" fullscreen hide-overlay>
       <v-card>
-        <v-carousel hide-delimiters height="100vh">
+        <v-carousel v-model="carouselIndex" hide-delimiters height="100vh">
           <v-carousel-item
             v-for="(file,i) in imageFiles"
             :key="i"
             :src="`/images/${file.n}?_secret=${siteSecret}`"
-          ></v-carousel-item>
+          >
+            <template v-slot:placeholder>
+              <v-row
+                class="fill-height ma-0"
+                align="center"
+                justify="center"
+              >
+                <v-progress-circular indeterminate color="primary"></v-progress-circular>
+              </v-row>
+            </template>
+          </v-carousel-item>
         </v-carousel>
 
         <v-btn top right large icon flat dark absolute @click="showCarouselDialog = false">
@@ -64,6 +74,7 @@
     showSecretDialog = false;
     showCarouselDialog = false;
     files: FileEntry[] = [];
+    carouselIndex: number = 0;
 
     @Watch('$route.query.path')
     onPathChange(path: string) {
@@ -90,7 +101,7 @@
     }
 
     getFileList(): Promise<FileEntry[]> {
-      const path = (this.$route.query.path as string) || '';
+      const path = (this.$route.query.path as string) || '/';
       return RestAPI
         .getFileList(path)
         .then((response) => {
@@ -122,11 +133,12 @@
         })
     }
 
-    onFileClick(file: FileEntry) {
+    onFileClick(file: FileEntry, index: number) {
       if (FileUtil.isImageFile(file)) {
+        this.carouselIndex = index;
         this.showCarouselDialog = true;
       } else if (file.d) {
-        this.$router.push({ query: { path: file.n } });
+        this.$router.push({ query: { path: '/' + file.n } });
       }
     }
   }
