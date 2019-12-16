@@ -17,6 +17,7 @@
             v-for="(file,i) in imageFiles"
             :key="i"
             :src="getImageSrc(file)"
+            contain
           >
             <template v-slot:placeholder>
               <v-row
@@ -30,7 +31,7 @@
           </v-carousel-item>
         </v-carousel>
 
-        <v-btn top right large icon text dark absolute @click="showCarouselDialog = false">
+        <v-btn top right large dark icon absolute color="black" @click="showCarouselDialog = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-card>
@@ -78,6 +79,8 @@
 
     @Watch('$route.query.path')
     onPathChange(path: string) {
+      this.files = [];
+
       this
         .getFileList()
         .catch((e) => {
@@ -138,7 +141,8 @@
         this.carouselIndex = this.imageFiles.indexOf(file);
         this.showCarouselDialog = true;
       } else if (file.d) {
-        this.$router.push({ query: { path: '/' + file.n } });
+        const { query: { path } } = this.$route;
+        this.$router.push({ query: { path: path + '/' + file.n } });
       }
     }
 
@@ -146,7 +150,7 @@
       const { query: { path } } = this.$route;
       const { siteSecret } = this;
       const { n } = file;
-      return `/images/${path}/${n}` + (siteSecret ? `?_secret=${siteSecret}` : '');
+      return `/images${path}/${n}` + (siteSecret ? `?_secret=${siteSecret}` : '');
     }
   }
 </script>
