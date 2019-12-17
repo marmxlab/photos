@@ -12,7 +12,7 @@
     <!-- Carousel Dialog -->
     <v-dialog v-model="showCarouselDialog" fullscreen hide-overlay>
       <v-card>
-        <v-carousel v-model="carouselIndex" hide-delimiters height="100vh">
+        <v-carousel v-model="carouselIndex" hide-delimiters height="100vh" class="browse__carousel">
           <v-carousel-item
             v-for="(file,i) in imageFiles"
             :key="i"
@@ -31,9 +31,16 @@
           </v-carousel-item>
         </v-carousel>
 
-        <v-btn top right large dark icon absolute color="black" @click="showCarouselDialog = false">
-          <v-icon>mdi-close</v-icon>
-        </v-btn>
+        <v-layout align-center class="browse__carousel-tools">
+          <div class="font-weight-medium">{{ imageFiles[carouselIndex].n }}</div>
+          <v-spacer></v-spacer>
+          <v-btn large dark icon color="black" :href="getImageSrc(imageFiles[carouselIndex])" download>
+            <v-icon>mdi-download</v-icon>
+          </v-btn>
+          <v-btn large dark icon color="black" class="ml-2" @click="showCarouselDialog = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-layout>
       </v-card>
     </v-dialog>
 
@@ -167,4 +174,17 @@
   .browse
     &__file
       float: left
+    &__carousel
+      background-color: black
+    &__carousel-tools
+      position: absolute
+      left: 0
+      right: 0
+      top: 0
+      padding: 16px
+      background-color: rgba(255, 255, 255, .86)
+      transition: all 0.3s cubic-bezier(.25,.8,.25,1)
+      opacity: 0
+      &:hover
+        opacity: 1
 </style>
