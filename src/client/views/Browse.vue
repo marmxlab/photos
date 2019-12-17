@@ -6,41 +6,19 @@
         :key="i"
         class="browse__file ma-1"
         @click="onFileClick"
+        :secret="siteSecret"
       ></file>
     </template>
 
     <!-- Carousel Dialog -->
     <v-dialog v-model="showCarouselDialog" fullscreen hide-overlay>
       <v-card>
-        <v-carousel v-model="carouselIndex" hide-delimiters height="100vh" class="browse__carousel">
-          <v-carousel-item
-            v-for="(file,i) in imageFiles"
-            :key="i"
-            :src="getImageSrc(file)"
-            contain
-          >
-            <template v-slot:placeholder>
-              <v-row
-                class="fill-height ma-0"
-                align="center"
-                justify="center"
-              >
-                <v-progress-circular indeterminate color="primary"></v-progress-circular>
-              </v-row>
-            </template>
-          </v-carousel-item>
-        </v-carousel>
-
-        <v-layout align-center class="browse__carousel-tools">
-          <div class="font-weight-medium">{{ imageFiles[carouselIndex].n }}</div>
-          <v-spacer></v-spacer>
-          <v-btn large dark icon color="black" :href="getImageSrc(imageFiles[carouselIndex])" download>
-            <v-icon>mdi-download</v-icon>
-          </v-btn>
-          <v-btn large dark icon color="black" class="ml-2" @click="showCarouselDialog = false">
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-        </v-layout>
+        <media-carousel
+          v-model="carouselIndex"
+          :files="mediaFiles"
+          :secret="siteSecret"
+          @close="showCarouselDialog = false"
+        ></media-carousel>
       </v-card>
     </v-dialog>
 
@@ -73,8 +51,9 @@
   import FileEntry from "../models/FileEntry";
   import File from "../components/File.vue";
   import FileUtil from "../utils/File";
+  import MediaCarousel from "../components/MediaCarousel.vue";
   @Component({
-    components: { File }
+    components: {MediaCarousel, File }
   })
   export default class Browse extends Vue {
     siteSecret = '';
@@ -113,8 +92,8 @@
       }
     }
 
-    get imageFiles(): FileEntry[] {
-      return this.files.filter((file) => FileUtil.isImageFile(file));
+    get mediaFiles(): FileEntry[] {
+      return this.files.filter((file) => FileUtil.isImageFile(file) || FileUtil.isVideoFile(file));
     }
 
     getFileList(): Promise<FileEntry[]> {
@@ -151,8 +130,8 @@
     }
 
     onFileClick(file: FileEntry) {
-      if (FileUtil.isImageFile(file)) {
-        this.carouselIndex = this.imageFiles.indexOf(file);
+      if (FileUtil.isImageFile(file) || FileUtil.isVideoFile(file)) {
+        this.carouselIndex = this.mediaFiles.indexOf(file);
         this.showCarouselDialog = true;
       } else if (file.d) {
         const { query: { path } } = this.$route;
@@ -160,31 +139,10 @@
         this.$router.push({ query: { path: nextPath } });
       }
     }
-
-    getImageSrc(file: FileEntry): string {
-      const { query: { path } } = this.$route;
-      const { siteSecret } = this;
-      const { n } = file;
-      const filePath = (path === '/' ? '' : (path as string).substr(1) + '/') + n;
-      return '/images/' + filePath + (siteSecret ? `?_secret=${siteSecret}` : '');
-    }
   }
 </script>
 <style lang="sass" scoped>
   .browse
     &__file
       float: left
-    &__carousel
-      background-color: black
-    &__carousel-tools
-      position: absolute
-      left: 0
-      right: 0
-      top: 0
-      padding: 16px
-      background-color: rgba(255, 255, 255, .86)
-      transition: all 0.3s cubic-bezier(.25,.8,.25,1)
-      opacity: 0
-      &:hover
-        opacity: 1
 </style>

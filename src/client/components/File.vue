@@ -1,7 +1,8 @@
 <template>
-  <v-layout column class="file" @click="$emit('click', file)">
+  <v-layout column class="file" :class="{ 'file__disabled': isOtherFile }" @click="$emit('click', file)">
     <v-flex class="file__preview">
       <v-icon v-if="file.d" size="50">mdi-folder-outline</v-icon>
+      <v-icon v-else-if="isVideoFile" size="50">mdi-movie-outline</v-icon>
       <v-img
         ref="img"
         v-else-if="isImageFile"
@@ -27,26 +28,34 @@
 <script lang="ts">
   import {Component, Prop, Vue} from "vue-property-decorator";
   import FileEntry from "../models/FileEntry";
-  import RestAPI from "../utils/RestAPI";
   import FileUtil from "../utils/File";
 
   @Component
   export default class File extends Vue {
     @Prop({ type: Object, required: true }) file!: FileEntry;
+    @Prop(String) secret!: string;
 
-    get siteSecret(): string {
-      return RestAPI.getSecret() || '';
+    get isDirectory(): boolean {
+      return this.file.d;
     }
 
     get isImageFile(): boolean {
       return FileUtil.isImageFile(this.file);
     }
 
+    get isVideoFile(): boolean {
+      return FileUtil.isVideoFile(this.file);
+    }
+
+    get isOtherFile(): boolean {
+      return !this.isDirectory && !this.isImageFile && !this.isVideoFile;
+    }
+
     get imageSrc(): string {
       const { query: { path } } = this.$route;
-      const { file: { n }, siteSecret } = this;
+      const { file: { n }, secret } = this;
       const filePath = (path === '/' ? '' : (path as string).substr(1) + '/') + n;
-      return '/thumbnails/' + filePath + (siteSecret ? `?_secret=${siteSecret}` : '');
+      return '/thumbnails/' + filePath + (secret ? `?_secret=${secret}` : '');
     }
 
     onImageError() {
@@ -68,7 +77,7 @@
     transition: all 0.3s cubic-bezier(.25,.8,.25,1)
     border-radius: 4px
     overflow: hidden
-    &:hover
+    &:not(&__disabled):hover
       cursor: pointer
       transform: scale(1.2)
       box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23)
@@ -84,4 +93,6 @@
       overflow: hidden
       text-overflow: ellipsis
       white-space: nowrap
+    &__disabled
+      cursor: not-allowed
 </style>
