@@ -6,7 +6,11 @@
     "preserveConstEnums": true,
     "outDir": "dist/",
     "sourceMap": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "rootDirs": [
+      "src/server",
+      "src/worker"
+    ]
   },
   "exclude": [
     "node_modules",
