@@ -14,6 +14,7 @@
     <v-dialog v-model="showCarouselDialog" fullscreen hide-overlay>
       <v-card>
         <media-carousel
+          v-if="showCarouselDialog"
           v-model="carouselIndex"
           :files="mediaFiles"
           :secret="siteSecret"
