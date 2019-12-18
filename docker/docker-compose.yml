@@ -1,0 +1,43 @@
+version: '3'
+services:
+  redis-server:
+    image: 'redis'
+  node-app:
+    volumes:
+      - photos:/data/photos
+      - thumbnails:/data/photos/.thumbnails
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.app
+    ports:
+      - "3000:3000"
+    environment:
+      - ROOT_FOLDER=/data/photos
+      - THUMBNAIL_FOLDER=/data/photos/.thumbnails
+      - REDIS_HOST=redis-server
+      - REDIS_PORT=6379
+      - AUTH_SECRET=
+  node-worker:
+    volumes:
+      - photos:/data/photos
+      - thumbnails:/data/photos/.thumbnails
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.worker
+    environment:
+      - REDIS_HOST=redis-server
+      - REDIS_PORT=6379
+volumes:
+  photos:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: /Users/user/data/photos
+  thumbnails:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: /Users/user/data/photos/.thumbnails
+
