@@ -65,7 +65,7 @@
       const { secret } = this;
       const { n } = file;
       const filePath = (path === '/' ? '' : (path as string).substr(1) + '/') + n;
-      return '/images/' + filePath + (secret ? `?_secret=${secret}` : '');
+      return '/images/' + filePath + (secret ? `?_secret=${encodeURIComponent(secret)}` : '');
     }
 
     isImage(file: FileEntry): boolean {

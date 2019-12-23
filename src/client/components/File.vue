@@ -57,7 +57,7 @@
       const { query: { path } } = this.$route;
       const { file: { n: filename }, secret } = this;
       const filePath = (path === '/' ? '' : (path as string).substr(1) + '/') + filename + '.jpeg';
-      return '/thumbnails/' + filePath + (secret ? `?_secret=${secret}` : '');
+      return '/thumbnails/' + filePath + (secret ? `?_secret=${encodeURIComponent(secret)}` : '');
     }
 
     onImageError() {
