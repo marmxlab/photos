@@ -4,8 +4,8 @@ import FileEntry from "../models/FileEntry";
 // https://www.encoding.com/formats/
 
 export default class FileUtil {
-  private static supportedImageFormats = ['bmp', 'jpg', 'jpeg', 'png', 'tiff'];
-  private static supportedVideoFormats = ['mp4', 'm4a', 'm4v', 'f4v', 'f4a', 'm4b', 'm4r', 'f4b', 'mov', 'wmv', 'wma', 'ogg', 'avi', 'mov', 'ts', 'flv', '3gp', '3gp2', '3g2', '3gpp', '3gpp2'];
+  private static supportedImageFormats = ['bmp', 'jpg', 'jpeg', 'png'];
+  private static supportedVideoFormats = ['mp4', 'webm', 'ogg'];
 
   static isImageFile(file: FileEntry): boolean {
     const fileExt = this.getFileExt(file.n);

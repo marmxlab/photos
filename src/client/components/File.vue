@@ -2,13 +2,12 @@
   <v-layout column class="file" :class="{ 'file__disabled': isOtherFile }" @click="$emit('click', file)">
     <v-flex class="file__preview">
       <v-icon v-if="file.d" size="50">mdi-folder-outline</v-icon>
-      <v-icon v-else-if="isVideoFile" size="50">mdi-movie-outline</v-icon>
       <v-img
         ref="img"
-        v-else-if="isImageFile"
+        v-else-if="isImageFile || isVideoFile"
         :src="imageSrc"
-        max-width="200"
         @error="onImageError"
+        height="100%"
       >
         <template v-slot:placeholder>
           <v-row
@@ -21,6 +20,9 @@
         </template>
       </v-img>
       <v-icon v-else size="50">mdi-file-outline</v-icon>
+      <div v-if="isVideoFile" class="file__video-icon">
+        <v-icon size="50" dark>mdi-play-outline</v-icon>
+      </div>
     </v-flex>
     <div class="file__name">{{ file.n }}</div>
   </v-layout>
@@ -53,8 +55,8 @@
 
     get imageSrc(): string {
       const { query: { path } } = this.$route;
-      const { file: { n }, secret } = this;
-      const filePath = (path === '/' ? '' : (path as string).substr(1) + '/') + n;
+      const { file: { n: filename }, secret } = this;
+      const filePath = (path === '/' ? '' : (path as string).substr(1) + '/') + filename + '.jpeg';
       return '/thumbnails/' + filePath + (secret ? `?_secret=${secret}` : '');
     }
 
@@ -86,6 +88,13 @@
       justify-content: center
       align-items: center
       display: flex
+      position: relative
+      height: 200px
+    &__video-icon
+      position: absolute
+      top: 50%
+      left: 50%
+      transform: translateX(-50%) translateY(-50%)
     &__name
       text-align: center
       font-size: 13px
