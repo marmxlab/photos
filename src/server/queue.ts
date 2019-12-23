@@ -12,8 +12,8 @@ class Queue{
     });
   }
 
-  addJob(srcPath: string, dstPath: string) {
-    return this.queue.add({ srcPath, dstPath });
+  addJob(filePath: string, fileMIME: string, dstFolder: string) {
+    return this.queue.add({ filePath, fileMIME, dstFolder });
   }
 }
 

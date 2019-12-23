@@ -1,10 +1,11 @@
 require('dotenv').config();
 
 import {DoneCallback, Job} from "bull";
-
+import ffmpeg from 'fluent-ffmpeg';
 const fs = require('fs');
-import jimp from "jimp";
+const path = require('path');
 const Bull = require('bull');
+
 const queue = new Bull('thumbnail-generations', {
   redis: {
     port: process.env.REDIS_PORT || 6379,
@@ -12,26 +13,53 @@ const queue = new Bull('thumbnail-generations', {
   }
 });
 
-queue.process(async (job: Job<{ srcPath: string, dstPath: string, overwrite? : boolean }>) => {
-  const { srcPath, dstPath, overwrite } = job.data;
+const IMAGE_MIMES = ['image/jpeg', 'image/bmp', 'image/png', 'image/webp'];
+const VIDEO_MIMES = ['video/mp4', 'video/mpeg', 'video/ogg', 'video/webm'];
 
-  if (!overwrite && fs.existsSync(dstPath)) {
-    return Promise.resolve();
+queue.process(async (job: Job<{ filePath: string, fileMIME: string, dstFolder: string, overwrite? : boolean }>, done: DoneCallback) => {
+  const { filePath, fileMIME, dstFolder, overwrite } = job.data;
+  const fileName = path.basename(filePath);
+  const thumbnailPath = `${dstFolder}/${fileName}.jpeg`;
+
+  if (!overwrite && fs.existsSync(thumbnailPath)) {
+    return done();
   }
-  console.log('Generating thumbnail for', srcPath);
 
-  return jimp
-    .read(srcPath)
-    .then((image) => new Promise((resolve) => {
-      image.cover(500, 500, jimp.HORIZONTAL_ALIGN_CENTER | jimp.VERTICAL_ALIGN_MIDDLE, (e, thumbnail) => {
-        if (e) {
-          throw e;
-        }
-        resolve(thumbnail);
-      })
-    }))
-    .then((thumbnail: any) => thumbnail.writeAsync(dstPath) )
-    .then(() => {
-      console.log('Finished generating thumbnail for', srcPath)
+  if (IMAGE_MIMES.indexOf(fileMIME) === -1 && VIDEO_MIMES.indexOf(fileMIME) === -1) {
+    console.log(`Not supported media format detected for generating thumbnails for ${filePath} (${fileMIME})`);
+  }
+
+  if (!fs.existsSync(dstFolder)) {
+    fs.mkdirSync(dstFolder);
+  }
+
+  let ffmpegCommand = ffmpeg(filePath);
+
+  if(VIDEO_MIMES.indexOf(fileMIME) >= 0) {
+    ffmpegCommand
+      .inputOptions([
+        '-ss', '1',
+      ])
+      .outputOptions([
+        '-f', 'image2',
+        '-vframes', '1',
+      ])
+  }
+
+  console.log('Start generate thumbnail for:     ', filePath);
+
+  ffmpegCommand
+    .size('500x?')
+    .output(thumbnailPath)
+    .on('end', function() {
+      console.log('Finished generating thumbnail at: ', thumbnailPath);
+      done();
     })
+    .on('stderr', function(stderrLine) {
+      // console.log('Stderr output: ' + stderrLine);
+    })
+    .on('error', function(err, stdout, stderr) {
+      console.log('Cannot process video: ' + err.message);
+    })
+    .run();
 });

@@ -11,14 +11,16 @@
     "build": "npm run tsc && vue-cli-service build --dest dist/server/public src/client/main.ts"
   },
   "dependencies": {
+    "@types/fluent-ffmpeg": "^2.1.12",
     "bull": "^3.12.1",
     "dotenv": "^8.2.0",
+    "fluent-ffmpeg": "^2.1.2",
     "ioredis": "^4.14.1",
-    "jimp": "^0.9.3",
     "koa": "^2.11.0",
     "koa-mount": "^4.0.0",
     "koa-router": "^7.4.0",
     "koa-static": "^5.0.0",
+    "mime-types": "^2.1.25",
     "vuetify": "^2.1.0"
   },
   "devDependencies": {
