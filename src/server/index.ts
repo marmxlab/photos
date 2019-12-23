@@ -9,6 +9,7 @@ const app = new Koa();
 
 const mount = require('koa-mount');
 const serve = require('koa-static');
+const range = require('koa-range');
 
 if (!process.env.ROOT_FOLDER || !process.env.THUMBNAIL_FOLDER) {
   throw new Error('ROOT_FOLDER and THUMBNAIL_FOLDER must be specified in environment variables.')
@@ -34,6 +35,7 @@ if(process.env.AUTH_SECRET) {
   app.use(authMiddleware);
 }
 
+app.use(range);
 app.use(serve('public'));
 app.use(mount('/images', serve(rootPath)));
 app.use(mount('/thumbnails', serve(thumbnailsPath)));
