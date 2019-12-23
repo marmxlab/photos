@@ -4,10 +4,11 @@
   "description": "",
   "author": "",
   "scripts": {
-    "server-start": "tsc && node dist/server/index.js",
+    "tsc": "tsc",
+    "server-start": "npm run tsc && node dist/server/index.js",
     "ui-serve": "vue-cli-service serve src/client/main.ts",
-    "worker": "tsc --outDir dist/worker src/worker/index.ts --esModuleInterop && node dist/worker/index.js",
-    "build": "tsc && vue-cli-service build --dest dist/server/public src/client/main.ts"
+    "worker": "npm run tsc && node dist/worker/index.js",
+    "build": "npm run tsc && vue-cli-service build --dest dist/server/public src/client/main.ts"
   },
   "dependencies": {
     "bull": "^3.12.1",
