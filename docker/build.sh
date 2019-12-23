@@ -3,6 +3,6 @@ npm install
 npm run build
 
 cd docker
-docker-compose build --no-cache
+docker-compose build
 
 rm -rf ../dist

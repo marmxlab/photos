@@ -17,6 +17,8 @@ services:
       - REDIS_HOST=redis-server
       - REDIS_PORT=6379
       - AUTH_SECRET=
+    depends_on:
+      - redis-server
   node-worker:
     volumes:
       - photos:/data/photos
@@ -27,6 +29,8 @@ services:
     environment:
       - REDIS_HOST=redis-server
       - REDIS_PORT=6379
+    depends_on:
+      - redis-server
 volumes:
   photos:
     driver: local
