@@ -5,16 +5,13 @@
   "author": "",
   "scripts": {
     "tsc": "tsc",
-    "server-start": "node dist/server/index.js",
+    "server-start": "node dist/index.js",
     "ui-serve": "vue-cli-service serve src/client/main.ts",
-    "worker": "node dist/worker/index.js",
-    "build": "npm run tsc && vue-cli-service build --dest dist/server/public src/client/main.ts"
+    "build": "npm run tsc && vue-cli-service build --dest dist/public src/client/main.ts"
   },
   "dependencies": {
-    "@types/fluent-ffmpeg": "^2.1.12",
     "bull": "^3.12.1",
     "dotenv": "^8.2.0",
-    "fluent-ffmpeg": "^2.1.2",
     "ioredis": "^4.14.1",
     "koa": "^2.11.0",
     "koa-mount": "^4.0.0",

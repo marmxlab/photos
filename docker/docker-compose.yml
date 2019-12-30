@@ -3,12 +3,10 @@ services:
   redis-server:
     image: 'redis'
   node-app:
+    image: ${IMAGE_TAG_PHOTOS_APP}
     volumes:
       - photos:/data/photos
       - thumbnails:/data/photos/.thumbnails
-    build:
-      context: ..
-      dockerfile: docker/Dockerfile.app
     ports:
       - "3000:3000"
     environment:
@@ -20,12 +18,10 @@ services:
     depends_on:
       - redis-server
   node-worker:
+    image: ${IMAGE_TAG_PHOTOS_WORKER}
     volumes:
       - photos:/data/photos
       - thumbnails:/data/photos/.thumbnails
-    build:
-      context: ..
-      dockerfile: docker/Dockerfile.worker
     environment:
       - REDIS_HOST=redis-server
       - REDIS_PORT=6379
