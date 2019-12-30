@@ -3,5 +3,4 @@ node_modules
 test-gallery
 dist
 .env*
-!.env.app.example
-!.env.worker.example
+!.env.example
