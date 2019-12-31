@@ -1,13 +1,40 @@
 <template>
-  <div class="browse">
+  <div class="browse" v-resize="onWindowResize">
+    <v-app-bar app color="indigo" dark>
+      <v-toolbar-title>Your location: {{ $route.query.path || '/' }}</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-menu v-if="$vuetify.breakpoint.mdAndUp" left bottom offset-y>
+        <template v-slot:activator="{ on }">
+          <v-btn icon v-on="on">
+            <v-icon>mdi-dots-vertical</v-icon>
+          </v-btn>
+        </template>
+
+        <v-card raised class="browse__menu pa-3">
+          <v-slider
+            v-model="gridColumns"
+            :min="minGridColumns"
+            :max="maxGridColumns"
+            step="1"
+            reverse
+            append-icon="mdi-magnify-minus-outline"
+            prepend-icon="mdi-magnify-plus-outline"
+            hide-details
+          />
+        </v-card>
+      </v-menu>
+    </v-app-bar>
+
+
     <template v-for="(file, i) in files">
       <file
+        :size="displaySize "
         :file="file"
         :key="i"
         class="browse__file ma-1"
         @click="onFileClick"
         :secret="siteSecret"
-      ></file>
+      />
     </template>
 
     <!-- Carousel Dialog -->
@@ -19,7 +46,7 @@
           :files="mediaFiles"
           :secret="siteSecret"
           @close="showCarouselDialog = false"
-        ></media-carousel>
+        />
       </v-card>
     </v-dialog>
 
@@ -35,10 +62,10 @@
             filled
             :error-messages="wrongSecret ? 'Incorrect site secret.': ''"
             @keydown="wrongSecret = false"
-          ></v-text-field>
+          />
         </v-card-text>
         <v-card-actions>
-          <v-spacer></v-spacer>
+          <v-spacer />
           <v-btn color="blue darken-1" text @click="proceedWithSecret" :disabled="!siteSecret">Proceed</v-btn>
         </v-card-actions>
       </v-card>
@@ -53,10 +80,17 @@
   import File from "../components/File.vue";
   import FileUtil from "../utils/File";
   import MediaCarousel from "../components/MediaCarousel.vue";
+
+  const MIN_GRID_COLUMNS = 4;
+  const MAX_GRID_COLUMNS = 10;
+  const GRID_GAP = 8;
+
   @Component({
     components: {MediaCarousel, File }
   })
   export default class Browse extends Vue {
+    windowWidth = 0;
+    gridColumns = 6;
     siteSecret = '';
     wrongSecret = false;
     showSecretDialog = false;
@@ -79,6 +113,8 @@
     }
 
     created() {
+      this.windowWidth = window.innerWidth;
+
       if (!this.$route.query.path) {
         this.$router.replace({ query: { path: '/' } });
       } else {
@@ -140,10 +176,34 @@
         this.$router.push({ query: { path: nextPath } });
       }
     }
+
+    onWindowResize() {
+      this.windowWidth = window.innerWidth;
+    }
+
+    get minGridColumns(): number {
+      return MIN_GRID_COLUMNS;
+    }
+
+    get maxGridColumns(): number {
+      return MAX_GRID_COLUMNS;
+    }
+
+    get displaySize(): number {
+      if (this.$vuetify.breakpoint.xsOnly) {
+        return this.windowWidth - GRID_GAP;
+      } else if (this.$vuetify.breakpoint.smOnly) {
+        return (this.windowWidth - GRID_GAP * 2) / 2;
+      }
+
+      return (this.windowWidth - this.gridColumns * GRID_GAP) / this.gridColumns;
+    }
   }
 </script>
 <style lang="sass" scoped>
   .browse
+    &__menu
+      width: 500px
     &__file
       float: left
 </style>

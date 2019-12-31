@@ -1,6 +1,6 @@
 <template>
-  <v-layout column class="file" :class="{ 'file__disabled': isOtherFile }" @click="$emit('click', file)">
-    <v-flex class="file__preview">
+  <v-layout column class="file" :class="{ 'file__disabled': isOtherFile }" @click="$emit('click', file)" :style="{'width': size + 'px'}">
+    <v-flex class="file__preview" :style="previewStyle">
       <v-icon v-if="file.d" size="50">mdi-folder-outline</v-icon>
       <v-img
         ref="img"
@@ -34,6 +34,7 @@
 
   @Component
   export default class File extends Vue {
+    @Prop({ type: [String, Number], default: '200' }) size!: string;
     @Prop({ type: Object, required: true }) file!: FileEntry;
     @Prop(String) secret!: string;
 
@@ -60,6 +61,14 @@
       return '/thumbnails/' + filePath + (secret ? `?_secret=${encodeURIComponent(secret)}` : '');
     }
 
+    get previewStyle() {
+      const { size } = this;
+      return {
+        width: `${size}px`,
+        height: `${size}px`,
+      };
+    }
+
     onImageError() {
       const MIN_TIMEOUT = 3000;
       const MAX_TIMEOUT = 5000;
@@ -73,10 +82,8 @@
 <style lang="sass" scoped>
   .file
     position: relative
-    width: 200px
-    height: 220px
     background-color: white
-    transition: all 0.3s cubic-bezier(.25,.8,.25,1)
+    transition: transform 0.3s cubic-bezier(.25,.8,.25,1)
     border-radius: 4px
     overflow: hidden
     &:not(&__disabled):hover
@@ -85,11 +92,11 @@
       box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23)
       z-index: 1
     &__preview
+      overflow: hidden
       justify-content: center
       align-items: center
       display: flex
       position: relative
-      height: 200px
     &__video-icon
       position: absolute
       top: 50%
@@ -102,6 +109,7 @@
       overflow: hidden
       text-overflow: ellipsis
       white-space: nowrap
+      padding: 0 4px
     &__disabled
       cursor: not-allowed
 </style>
