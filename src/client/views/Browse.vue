@@ -62,6 +62,7 @@
             filled
             :error-messages="wrongSecret ? 'Incorrect site secret.': ''"
             @keydown="wrongSecret = false"
+            @keydown.enter="proceedWithSecret"
           />
         </v-card-text>
         <v-card-actions>
@@ -101,15 +102,8 @@
     @Watch('$route.query.path')
     onPathChange(path: string) {
       this.files = [];
-
-      this
-        .getFileList()
-        .catch((e) => {
-          console.error(e);
-          if (e.response.status === 401) {
-            this.showSecretDialog = true;
-          }
-        })
+      this.showCarouselDialog = false;
+      this.getFileList();
     }
 
     created() {
@@ -118,14 +112,7 @@
       if (!this.$route.query.path) {
         this.$router.replace({ query: { path: '/' } });
       } else {
-        this
-          .getFileList()
-          .catch((e) => {
-            console.error(e);
-            if (e.response.status === 401) {
-              this.showSecretDialog = true;
-            }
-          })
+        this.getFileList();
       }
     }
 
@@ -133,37 +120,29 @@
       return this.files.filter((file) => FileUtil.isImageFile(file) || FileUtil.isVideoFile(file));
     }
 
-    getFileList(): Promise<FileEntry[]> {
-      const path = (this.$route.query.path as string) || '/';
-      return RestAPI
-        .getFileList(path)
-        .then((response) => {
-          response.data.sort((a, b) => {
-            if (a.d && !b.d) return -1;
-            if (!a.d && b.d) return 1;
+    get minGridColumns(): number {
+      return MIN_GRID_COLUMNS;
+    }
 
-            if (a.n > b.n) return 1;
-            if (b.n > a.n) return -1;
+    get maxGridColumns(): number {
+      return MAX_GRID_COLUMNS;
+    }
 
-            return 0;
-          });
-          this.files = response.data;
-          return response.data;
-        })
+    get displaySize(): number {
+      if (this.$vuetify.breakpoint.xsOnly) {
+        return this.windowWidth - GRID_GAP;
+      } else if (this.$vuetify.breakpoint.smOnly) {
+        return (this.windowWidth - GRID_GAP * 2) / 2;
+      }
+      return (this.windowWidth - this.gridColumns * GRID_GAP) / this.gridColumns;
     }
 
     proceedWithSecret() {
-      const { siteSecret } = this;
-
-      RestAPI.setSecret(siteSecret);
-
-      this
-        .getFileList()
-        .then(() => { this.showSecretDialog = false; })
-        .catch((e) => {
-          console.error(e);
-          this.wrongSecret = true;
-        })
+      const {siteSecret} = this;
+      if (siteSecret) {
+        RestAPI.setSecret(siteSecret);
+        this.getFileList();
+      }
     }
 
     onFileClick(file: FileEntry) {
@@ -181,22 +160,34 @@
       this.windowWidth = window.innerWidth;
     }
 
-    get minGridColumns(): number {
-      return MIN_GRID_COLUMNS;
-    }
+    getFileList() {
+      const path = (this.$route.query.path as string) || '/';
+      RestAPI
+        .getFileList(path)
+        .then((response) => {
+          this.showSecretDialog = false;
+          response.data.sort((a, b) => {
+            if (a.d && !b.d) return -1;
+            if (!a.d && b.d) return 1;
 
-    get maxGridColumns(): number {
-      return MAX_GRID_COLUMNS;
-    }
+            if (a.n > b.n) return 1;
+            if (b.n > a.n) return -1;
 
-    get displaySize(): number {
-      if (this.$vuetify.breakpoint.xsOnly) {
-        return this.windowWidth - GRID_GAP;
-      } else if (this.$vuetify.breakpoint.smOnly) {
-        return (this.windowWidth - GRID_GAP * 2) / 2;
-      }
+            return 0;
+          });
+          this.files = response.data;
+          return response.data;
+        })
+        .catch((e) => {
+          console.error(e);
+          if (e.response.status === 401) {
+            this.showSecretDialog = true;
 
-      return (this.windowWidth - this.gridColumns * GRID_GAP) / this.gridColumns;
+            if (this.siteSecret) {
+              this.wrongSecret = true;
+            }
+          }
+        })
     }
   }
 </script>
