@@ -1,19 +1,15 @@
-import {Context} from "koa";
-
 require('dotenv').config();
-
-import router from './router';
-
-const Koa = require('koa');
-const app = new Koa();
-
-const mount = require('koa-mount');
-const serve = require('koa-static');
-const range = require('koa-range');
 
 if (!process.env.ROOT_FOLDER || !process.env.THUMBNAIL_FOLDER) {
   throw new Error('ROOT_FOLDER and THUMBNAIL_FOLDER must be specified in environment variables.')
 }
+
+import Koa, {Context} from "koa";
+import router from './router';
+const app = new Koa();
+const mount = require('koa-mount');
+const serve = require('koa-static');
+const range = require('koa-range');
 
 const rootPath = process.env.ROOT_FOLDER;
 const thumbnailsPath = process.env.THUMBNAIL_FOLDER;
