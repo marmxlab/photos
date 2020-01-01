@@ -107,7 +107,7 @@
     }
 
     created() {
-      this.windowWidth = window.innerWidth;
+      this.windowWidth = document.body.clientWidth;
 
       if (!this.$route.query.path) {
         this.$router.replace({ query: { path: '/' } });
@@ -157,7 +157,7 @@
     }
 
     onWindowResize() {
-      this.windowWidth = window.innerWidth;
+      this.windowWidth = document.body.clientWidth;
     }
 
     getFileList() {
