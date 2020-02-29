@@ -38,6 +38,19 @@ class ImageManager {
         console.error('Uncaught error occurred while generating thumbnails for', targetPath, e.message || e);
       })
   }
+
+  removeThumbnailsAt(rPath: string): Promise<void> {
+    const thumbnailsPath = process.env.THUMBNAIL_FOLDER + (rPath !== '/' ? rPath : '');
+    return fs.promises
+      .readdir(thumbnailsPath, { withFileTypes: true })
+      .then((ds: Dirent[]) => {
+        return Promise.all(
+          ds
+            .filter((d) => !d.isDirectory())
+            .map((d) => fs.promises.unlink(`${thumbnailsPath}/${d.name}`))
+        )
+      })
+  }
 }
 
 export default new ImageManager();

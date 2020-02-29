@@ -10,6 +10,7 @@ const app = new Koa();
 const mount = require('koa-mount');
 const serve = require('koa-static');
 const range = require('koa-range');
+const bodyParser = require('koa-bodyparser');
 
 const rootPath = process.env.ROOT_FOLDER;
 const thumbnailsPath = process.env.THUMBNAIL_FOLDER;
@@ -32,6 +33,7 @@ if(process.env.AUTH_SECRET) {
 }
 
 app.use(range);
+app.use(bodyParser());
 app.use(serve('public'));
 app.use(mount('/images', serve(rootPath)));
 app.use(mount('/thumbnails', serve(thumbnailsPath)));

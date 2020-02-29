@@ -40,4 +40,24 @@ export default class File {
         ctx.body = e.message;
       })
   }
+
+  static async regenerateThumbnails(ctx: any, next: () => Promise<void>) {
+    const { path } = ctx.request.body;
+    const redisProcessingKey = `photos:processing:${path}`;
+
+    try {
+      await redis.del(redisProcessingKey);
+      await ImageManager.removeThumbnailsAt(path);
+      ctx.status = 200;
+      next();
+
+      // after responding
+      redis.set(redisProcessingKey, 1, 'EX', 1800);
+      ImageManager.generateThumbnails(path);
+    }
+    catch(e) {
+      ctx.status = 500;
+      ctx.body = e;
+    }
+  }
 }
