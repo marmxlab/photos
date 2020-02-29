@@ -37,6 +37,7 @@
     @Prop({ type: [String, Number], default: '200' }) size!: string;
     @Prop({ type: Object, required: true }) file!: FileEntry;
     @Prop(String) secret!: string;
+    @Prop(Number) ts!: number;
 
     get isDirectory(): boolean {
       return this.file.d;
@@ -56,9 +57,9 @@
 
     get imageSrc(): string {
       const { query: { path } } = this.$route;
-      const { file: { n: filename }, secret } = this;
+      const { file: { n: filename }, secret, ts } = this;
       const filePath = (path === '/' ? '' : (path as string).substr(1) + '/') + filename + '.jpeg';
-      return '/thumbnails/' + filePath + (secret ? `?_secret=${encodeURIComponent(secret)}` : '');
+      return `/thumbnails/${filePath}?_ts=${ts}${secret ? '&_secret=' + encodeURIComponent(secret) : ''}`;
     }
 
     get previewStyle() {

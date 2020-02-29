@@ -19,4 +19,12 @@ export default class RestAPI {
     }
     return axios.get('/api/list', config)
   }
+
+  static regenerateThumbnails(path: string) {
+    const config: any = { };
+    if (this.siteSecret) {
+      config.headers = { 'X-Photos-Secret': this.siteSecret };
+    }
+    return axios.post('/api/thumbnails/regenerate', { path }, config)
+  }
 }

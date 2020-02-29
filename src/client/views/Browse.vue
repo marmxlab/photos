@@ -3,37 +3,63 @@
     <v-app-bar app color="indigo" dark>
       <v-toolbar-title>Your location: {{ $route.query.path || '/' }}</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-menu v-if="$vuetify.breakpoint.mdAndUp" left bottom offset-y>
+      <v-menu v-model="menuShown" left bottom offset-y :close-on-content-click="false">
         <template v-slot:activator="{ on }">
           <v-btn icon v-on="on">
             <v-icon>mdi-dots-vertical</v-icon>
           </v-btn>
         </template>
 
-        <v-card raised class="browse__menu pa-3">
-          <v-slider
-            v-model="gridColumns"
-            :min="minGridColumns"
-            :max="maxGridColumns"
-            step="1"
-            reverse
-            append-icon="mdi-magnify-minus-outline"
-            prepend-icon="mdi-magnify-plus-outline"
-            hide-details
-          />
-        </v-card>
+        <v-list raised class="browse__menu pa-3">
+
+          <v-list-item @click="regenerateThumbnails">
+            <v-list-item-content>
+              <v-list-item-title>Regenerate thumbnails</v-list-item-title>
+            </v-list-item-content>
+            <v-list-item-action>
+              <v-progress-circular
+                v-if="regenStatus === 1"
+                indeterminate
+                color="primary"
+              ></v-progress-circular>
+              <v-tooltip bottom v-if="regenStatus === 2">
+                <template v-slot:activator="{ on }">
+                  <v-icon color="red" dark v-on="on">mdi-alert-circle-outline</v-icon>
+                </template>
+                <span>{{ regenError }}</span>
+              </v-tooltip>
+            </v-list-item-action>
+          </v-list-item>
+
+          <v-list-item v-if="$vuetify.breakpoint.mdAndUp">
+            <v-list-item-content>
+              <v-list-item-title>Icon size</v-list-item-title>
+              <v-slider
+                v-model="gridColumns"
+                :min="minGridColumns"
+                :max="maxGridColumns"
+                step="1"
+                reverse
+                append-icon="mdi-magnify-minus-outline"
+                prepend-icon="mdi-magnify-plus-outline"
+                hide-details
+              />
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
       </v-menu>
     </v-app-bar>
 
 
     <template v-for="(file, i) in files">
       <file
-        :size="displaySize "
+        :size="displaySize"
         :file="file"
         :key="i"
         class="browse__file ma-1"
         @click="onFileClick"
         :secret="siteSecret"
+        :ts="lastRefreshTs"
       />
     </template>
 
@@ -81,6 +107,7 @@
   import File from "../components/File.vue";
   import FileUtil from "../utils/File";
   import MediaCarousel from "../components/MediaCarousel.vue";
+  import {AxiosError} from "axios";
 
   const MIN_GRID_COLUMNS = 4;
   const MAX_GRID_COLUMNS = 10;
@@ -90,6 +117,7 @@
     components: {MediaCarousel, File }
   })
   export default class Browse extends Vue {
+    lastRefreshTs = 0;
     windowWidth = 0;
     gridColumns = 6;
     siteSecret = '';
@@ -97,13 +125,25 @@
     showSecretDialog = false;
     showCarouselDialog = false;
     files: FileEntry[] = [];
-    carouselIndex: number = 0;
+    carouselIndex = 0;
+    regenStatus = 0; // 0: pending; 1: loading; 2: failed
+    regenError = '';
+    menuShown = false;
 
     @Watch('$route.query.path')
     onPathChange(path: string) {
       this.files = [];
       this.showCarouselDialog = false;
       this.getFileList();
+    }
+
+    @Watch('menuShown')
+    onMenuShownChange(menuShown: boolean) {
+      if (!menuShown) {
+        // reset thumbnail regeneration status
+        this.regenStatus = 0;
+        this.regenError = '';
+      }
     }
 
     created() {
@@ -160,8 +200,29 @@
       this.windowWidth = document.body.clientWidth;
     }
 
+    regenerateThumbnails() {
+      const path = (this.$route.query.path as string) || '/';
+      this.regenStatus = 1;
+      RestAPI
+        .regenerateThumbnails(path)
+        .then(() => {
+          this.regenStatus = 0;
+          this.files = [];
+          this.$nextTick(() => {
+            this.getFileList();
+          })
+        })
+        .catch((e: AxiosError) => {
+          if (e.response) {
+            this.regenError = e.response.data;
+            this.regenStatus = 2;
+          }
+        })
+    }
+
     getFileList() {
       const path = (this.$route.query.path as string) || '/';
+      this.lastRefreshTs = Date.now();
       RestAPI
         .getFileList(path)
         .then((response) => {
