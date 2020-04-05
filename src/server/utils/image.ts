@@ -5,27 +5,30 @@ const mime = require('mime-types');
 const fs = require('fs');
 const path = require('path');
 
+const SUPPORTED_MIMES = [
+  'image/jpeg', 'image/bmp', 'image/png', 'image/webp', 'image/heic',
+  'video/mp4', 'video/mpeg', 'video/ogg', 'video/webm'
+];
+
 export default class ImageUtils {
 
   static generateThumbnailsFor(rPath: string) {
     const srcFolderPath = FileUtils.convertRelativePathToAbsolute(FileUtils.getRootFolderPath(), rPath);
     const thumbnailFolderPath = FileUtils.convertRelativePathToAbsolute(FileUtils.getThumbnailFolderPath(), rPath);
 
-    const imageFileFilter = (ds: Dirent[]) => ds.filter((d) => {
-      const supportedExtensions = ['.bmp', '.jpg', '.jpeg', '.png', '.mp4', '.webm', '.ogg'];
-      const fileExtension = path.extname(d.name).toLowerCase();
-      return !d.isDirectory() && supportedExtensions.indexOf(fileExtension) >= 0;
-    });
-
     fs.promises
       .readdir(srcFolderPath, { withFileTypes: true })
-      .then(imageFileFilter)
       .then((ds: Dirent[]) => {
         return Promise.all(
           ds.map((d) => new Promise((resolve) => {
-            const srcFilePath = `${srcFolderPath}/${d.name}`;
-            const srcFileMIME = mime.lookup(srcFilePath);
-            resolve(queue.addJob(srcFilePath, srcFileMIME, thumbnailFolderPath));
+            const fileAPath = `${srcFolderPath}/${d.name}`;
+            const fileMIME = mime.lookup(fileAPath);
+
+            if (SUPPORTED_MIMES.indexOf(fileMIME) >= 0) {
+              resolve(queue.addJob(fileAPath, fileMIME, thumbnailFolderPath));
+            } else {
+              resolve()
+            }
           }))
         )
       })
