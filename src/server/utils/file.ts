@@ -18,11 +18,13 @@ export default class FileUtils {
   }
 
   static getRootFolderPath() {
-    return process.env.ROOT_FOLDER;
+    const { ROOT_FOLDER } = process.env;
+    return ROOT_FOLDER.endsWith('/') ? ROOT_FOLDER.slice(0, -1) : ROOT_FOLDER;
   }
 
   static getThumbnailFolderPath() {
-    return process.env.THUMBNAIL_FOLDER;
+    const { THUMBNAIL_FOLDER } = process.env;
+    return THUMBNAIL_FOLDER.endsWith('/') ? THUMBNAIL_FOLDER.slice(0, -1) : THUMBNAIL_FOLDER;
   }
 
   static convertRelativePathToAbsolute(basePath: string, rPath: string) {

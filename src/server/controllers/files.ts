@@ -27,7 +27,7 @@ export default class FileController {
     try {
       const ds = await FileUtils.getFileList(aPath);
       ctx.body = ds
-        .filter((d) => `${aPath}${d.name}` !== FileUtils.getThumbnailFolderPath())
+        .filter((d) => `${aPath}/${d.name}` !== FileUtils.getThumbnailFolderPath())
         .map((d): FileEntry => ({ n: d.name, d: d.isDirectory() }))
 
       return next();
