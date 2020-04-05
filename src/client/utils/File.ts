@@ -8,13 +8,18 @@ export default class FileUtil {
   private static supportedVideoFormats = ['mp4', 'webm', 'ogg'];
 
   static isImageFile(file: FileEntry): boolean {
-    const fileExt = this.getFileExt(file.n);
-    return this.supportedImageFormats.indexOf(fileExt.toLowerCase()) >= 0;
+    const fileExt = this.getFileExt(file.n).toLowerCase();
+    return this.supportedImageFormats.indexOf(fileExt) >= 0;
   }
 
   static isVideoFile(file: FileEntry): boolean {
-    const fileExt = this.getFileExt(file.n);
-    return this.supportedVideoFormats.indexOf(fileExt.toLowerCase()) >= 0;
+    const fileExt = this.getFileExt(file.n).toLowerCase();
+    return this.supportedVideoFormats.indexOf(fileExt) >= 0;
+  }
+
+  static isHEICFile(file: FileEntry): boolean {
+    const fileExt = this.getFileExt(file.n).toLowerCase();
+    return fileExt === 'heic';
   }
 
   private static getFileExt(filename: string): string {

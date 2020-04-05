@@ -4,7 +4,7 @@
       <v-icon v-if="file.d" size="50">mdi-folder-outline</v-icon>
       <v-img
         ref="img"
-        v-else-if="isImageFile || isVideoFile"
+        v-else-if="isPreviewable"
         :src="imageSrc"
         @error="onImageError"
         height="100%"
@@ -51,6 +51,10 @@
       return FileUtil.isVideoFile(this.file);
     }
 
+    get isPreviewable(): boolean {
+      return this.isImageFile || this.isVideoFile || FileUtil.isHEICFile(this.file)
+    }
+
     get isOtherFile(): boolean {
       return !this.isDirectory && !this.isImageFile && !this.isVideoFile;
     }
@@ -58,7 +62,7 @@
     get imageSrc(): string {
       const { query: { path } } = this.$route;
       const { file: { n: filename }, secret, ts } = this;
-      const filePath = (path === '/' ? '' : (path as string).substr(1) + '/') + filename + '.jpeg';
+      const filePath = (path === '/' ? '' : (path as string).substr(1) + '/') + filename + '.jpg';
       return `/thumbnails/${filePath}?_ts=${ts}${secret ? '&_secret=' + encodeURIComponent(secret) : ''}`;
     }
 
