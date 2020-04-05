@@ -10,6 +10,7 @@
     "build": "npm run tsc && vue-cli-service build --dest dist/public src/client/main.ts"
   },
   "dependencies": {
+    "@koa/router": "^8.0.8",
     "bull": "^3.12.1",
     "dotenv": "^8.2.0",
     "ioredis": "^4.14.1",
@@ -17,7 +18,6 @@
     "koa-bodyparser": "^4.2.1",
     "koa-mount": "^4.0.0",
     "koa-range": "^0.3.0",
-    "koa-router": "^7.4.0",
     "koa-static": "^5.0.0",
     "mime-types": "^2.1.25",
     "vuetify": "^2.1.0"
@@ -26,8 +26,8 @@
     "@mdi/font": "^4.7.95",
     "@types/bull": "^3.10.6",
     "@types/koa": "^2.11.0",
-    "@types/koa-router": "^7.0.42",
     "@types/koa-static": "^4.0.1",
+    "@types/koa__router": "^8.0.2",
     "@types/node": "^12.12.14",
     "@vue/cli-plugin-babel": "^4.1.0",
     "@vue/cli-plugin-eslint": "^4.1.0",

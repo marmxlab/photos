@@ -1,6 +1,6 @@
 const Bull = require('bull');
 
-class Queue{
+class BullUtils{
   private queue: any;
 
   constructor() {
@@ -18,4 +18,4 @@ class Queue{
   }
 }
 
-export default new Queue();
+export default new BullUtils();

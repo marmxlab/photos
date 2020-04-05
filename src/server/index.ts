@@ -1,3 +1,5 @@
+import FileUtils from "./utils/file";
+
 require('dotenv').config();
 
 if (!process.env.ROOT_FOLDER || !process.env.THUMBNAIL_FOLDER) {
@@ -12,8 +14,10 @@ const serve = require('koa-static');
 const range = require('koa-range');
 const bodyParser = require('koa-bodyparser');
 
-const rootPath = process.env.ROOT_FOLDER;
-const thumbnailsPath = process.env.THUMBNAIL_FOLDER;
+const rootPath = FileUtils.getRootFolderPath();
+const thumbnailsPath = FileUtils.getThumbnailFolderPath();
+
+FileUtils.mkdirIfNotExist(thumbnailsPath);
 
 if(process.env.AUTH_SECRET) {
   const authSecret = process.env.AUTH_SECRET;
