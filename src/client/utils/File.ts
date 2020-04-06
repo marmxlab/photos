@@ -5,7 +5,7 @@ import FileEntry from "../models/FileEntry";
 
 export default class FileUtil {
   private static supportedImageFormats = ['bmp', 'jpg', 'jpeg', 'png'];
-  private static supportedVideoFormats = ['mp4', 'webm', 'ogg'];
+  private static supportedVideoFormats = ['mp4', 'webm', 'ogg', 'mov'];
 
   static isImageFile(file: FileEntry): boolean {
     const fileExt = this.getFileExt(file.n).toLowerCase();

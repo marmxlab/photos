@@ -7,7 +7,7 @@ const path = require('path');
 
 const SUPPORTED_MIMES = [
   'image/jpeg', 'image/bmp', 'image/png', 'image/webp', 'image/heic',
-  'video/mp4', 'video/mpeg', 'video/ogg', 'video/webm'
+  'video/mp4', 'video/mpeg', 'video/ogg', 'video/webm', 'video/quicktime'
 ];
 
 export default class ImageUtils {
