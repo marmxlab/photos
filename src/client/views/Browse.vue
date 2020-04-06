@@ -193,6 +193,12 @@
         const { query: { path } } = this.$route;
         const nextPath = path === '/' ? `/${file.n}` : `${path}/${file.n}`;
         this.$router.push({ query: { path: nextPath } });
+      } else {
+        const { origin, pathname } = window.location;
+        const { query: { path } } = this.$route;
+        const { n } = file;
+        const url = `${origin}${pathname}/images${path === '/' ? '' : path}/${n}`;
+        window.open(url);
       }
     }
 

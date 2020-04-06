@@ -1,7 +1,7 @@
 <template>
-  <v-layout column class="file" :class="{ 'file__disabled': isOtherFile }" @click="$emit('click', file)" :style="{'width': size + 'px'}">
+  <v-layout column class="file" @click="$emit('click', file)" :style="{'width': size + 'px'}">
     <v-flex class="file__preview" :style="previewStyle">
-      <v-icon v-if="file.d" size="50">mdi-folder-outline</v-icon>
+      <v-icon v-if="isDirectory" size="50">mdi-folder-outline</v-icon>
       <v-img
         ref="img"
         v-else-if="isPreviewable"
@@ -20,8 +20,12 @@
         </template>
       </v-img>
       <v-icon v-else size="50">mdi-file-outline</v-icon>
-      <div v-if="isVideoFile" class="file__video-icon">
+      <div v-if="isVideoFile" class="file__icon">
         <v-icon size="50" dark>mdi-play-outline</v-icon>
+      </div>
+      <div v-if="canOnlyBeDownloaded" class="file__tag">
+        <v-icon size="15" class="mr-1" dark>mdi-download</v-icon>
+        Direct download
       </div>
     </v-flex>
     <div class="file__name">{{ file.n }}</div>
@@ -55,8 +59,8 @@
       return this.isImageFile || this.isVideoFile || FileUtil.isHEICFile(this.file)
     }
 
-    get isOtherFile(): boolean {
-      return !this.isDirectory && !this.isImageFile && !this.isVideoFile;
+    get canOnlyBeDownloaded(): boolean {
+      return !this.isImageFile && !this.isVideoFile && !this.isDirectory;
     }
 
     get imageSrc(): string {
@@ -102,7 +106,7 @@
       align-items: center
       display: flex
       position: relative
-    &__video-icon
+    &__icon
       position: absolute
       top: 50%
       left: 50%
@@ -115,6 +119,14 @@
       text-overflow: ellipsis
       white-space: nowrap
       padding: 0 4px
-    &__disabled
-      cursor: not-allowed
+    &__tag
+      position: absolute
+      right: 0
+      top: 0
+      color: white
+      background-color: #37474F
+      text-transform: uppercase
+      font-size: 10px
+      padding: 4px 8px
+
 </style>
