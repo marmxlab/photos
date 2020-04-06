@@ -194,10 +194,12 @@
         const nextPath = path === '/' ? `/${file.n}` : `${path}/${file.n}`;
         this.$router.push({ query: { path: nextPath } });
       } else {
-        const { origin, pathname } = window.location;
+        const { siteSecret } = this;
         const { query: { path } } = this.$route;
-        const { n } = file;
-        const url = `${origin}${pathname}/images${path === '/' ? '' : path}/${n}`;
+        const { n: filename } = file;
+        const { origin, pathname } = window.location;
+        const baseUrl = `${origin}${pathname === '/' ? '' : pathname}`;
+        const url = `${baseUrl}/images${path === '/' ? '' : path}/${filename}?_secret=${encodeURIComponent(siteSecret)}`;
         window.open(url);
       }
     }
