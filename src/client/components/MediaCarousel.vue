@@ -64,7 +64,7 @@
       const { query: { path } } = this.$route;
       const { secret } = this;
       const { n } = file;
-      const filePath = (path === '/' ? '' : (path as string).substr(1) + '/') + n;
+      const filePath = (path === '/' ? '' : (path as string).substr(1) + '/') + encodeURIComponent(n);
       return '/images/' + filePath + (secret ? `?_secret=${encodeURIComponent(secret)}` : '');
     }
 

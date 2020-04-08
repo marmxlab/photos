@@ -198,8 +198,9 @@
         const { query: { path } } = this.$route;
         const { n: filename } = file;
         const { origin, pathname } = window.location;
-        const baseUrl = `${origin}${pathname === '/' ? '' : pathname}`;
-        const url = `${baseUrl}/images${path === '/' ? '' : path}/${filename}?_secret=${encodeURIComponent(siteSecret)}`;
+        const baseUrl = `${origin}${pathname === '/' ? '' : pathname}/images`;
+        const filePath = path === '/' ? '' : path + '/' + encodeURIComponent(filename);
+        const url = `${baseUrl}${filePath}?_secret=${encodeURIComponent(siteSecret)}`;
         window.open(url);
       }
     }

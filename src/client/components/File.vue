@@ -5,7 +5,7 @@
       <v-img
         ref="img"
         v-else-if="isPreviewable"
-        :src="imageSrc"
+        :src="thumbnailSrc"
         @error="onImageError"
         height="100%"
       >
@@ -63,10 +63,12 @@
       return !this.isImageFile && !this.isVideoFile && !this.isDirectory;
     }
 
-    get imageSrc(): string {
+    get thumbnailSrc(): string {
       const { query: { path } } = this.$route;
       const { file: { n: filename }, secret, ts } = this;
-      const filePath = (path === '/' ? '' : (path as string).substr(1) + '/') + filename + '.jpg';
+      const filePath = (path === '/' ? '' : (path as string).substr(1)) + '/' +
+        encodeURIComponent(filename) + '.jpg';
+
       return `/thumbnails/${filePath}?_ts=${ts}${secret ? '&_secret=' + encodeURIComponent(secret) : ''}`;
     }
 
