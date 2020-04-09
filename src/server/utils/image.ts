@@ -12,24 +12,30 @@ const SUPPORTED_MIMES = [
 
 export default class ImageUtils {
 
-  static generateThumbnailsFor(rPath: string) {
+  static generateThumbnailsFor(rPath: string, dirents?: Dirent[]) {
     const srcFolderPath = FileUtils.convertRelativePathToAbsolute(FileUtils.getRootFolderPath(), rPath);
     const thumbnailFolderPath = FileUtils.convertRelativePathToAbsolute(FileUtils.getThumbnailFolderPath(), rPath);
 
-    fs.promises
-      .readdir(srcFolderPath, { withFileTypes: true })
-      .then((ds: Dirent[]) => {
-        return Promise.all(
-          ds.map((d) => new Promise((resolve) => {
-            const fileAPath = `${srcFolderPath}/${d.name}`;
-            const fileMIME = mime.lookup(fileAPath);
+    const tasks = [
+      fs.promises.readdir(thumbnailFolderPath).catch(() => [] as string[]),
+      dirents ? Promise.resolve(dirents) : fs.promises.readdir(srcFolderPath, { withFileTypes: true })
+    ];
 
-            if (SUPPORTED_MIMES.indexOf(fileMIME) >= 0) {
-              resolve(queue.addJob(fileAPath, fileMIME, thumbnailFolderPath));
-            } else {
-              resolve()
-            }
-          }))
+    Promise.all(tasks)
+      .then(([thumbnails, ds]) => {
+        return Promise.all(
+          ds
+            .filter((d: Dirent) => thumbnails.indexOf(`${d.name}.jpg`) === -1)
+            .map((d: Dirent) => new Promise((resolve) => {
+              const fileAPath = `${srcFolderPath}/${d.name}`;
+              const fileMIME = mime.lookup(fileAPath);
+
+              if (SUPPORTED_MIMES.indexOf(fileMIME) >= 0) {
+                resolve(queue.addJob(fileAPath, fileMIME, thumbnailFolderPath));
+              } else {
+                resolve()
+              }
+            }))
         )
       })
       .catch((e: any) => {
