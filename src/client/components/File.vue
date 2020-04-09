@@ -35,6 +35,7 @@
   import {Component, Prop, Vue} from "vue-property-decorator";
   import FileEntry from "../models/FileEntry";
   import FileUtil from "../utils/File";
+  import PathUtils from "../utils/Path";
 
   @Component
   export default class File extends Vue {
@@ -65,11 +66,10 @@
 
     get thumbnailSrc(): string {
       const { query: { path } } = this.$route;
-      const { file: { n: filename }, secret, ts } = this;
-      const filePath = (path === '/' ? '' : (path as string).substr(1)) + '/' +
-        encodeURIComponent(filename) + '.jpg';
-
-      return `/thumbnails/${filePath}?_ts=${ts}${secret ? '&_secret=' + encodeURIComponent(secret) : ''}`;
+      const { file: { n }, secret, ts } = this;
+      const filename = `${n}.jpg`;
+      const queries = { _secret: secret, ts: ts.toString() };
+      return PathUtils.buildThumbnailUrl(path as string, filename, queries)
     }
 
     get previewStyle() {

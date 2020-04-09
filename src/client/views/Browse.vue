@@ -108,6 +108,7 @@
   import FileUtil from "../utils/File";
   import MediaCarousel from "../components/MediaCarousel.vue";
   import {AxiosError} from "axios";
+  import PathUtils from "../utils/Path";
 
   const MIN_GRID_COLUMNS = 4;
   const MAX_GRID_COLUMNS = 10;
@@ -194,13 +195,11 @@
         const nextPath = path === '/' ? `/${file.n}` : `${path}/${file.n}`;
         this.$router.push({ query: { path: nextPath } });
       } else {
-        const { siteSecret } = this;
-        const { query: { path } } = this.$route;
-        const { n: filename } = file;
-        const { origin, pathname } = window.location;
-        const baseUrl = `${origin}${pathname === '/' ? '' : pathname}/images`;
-        const filePath = path === '/' ? '' : path + '/' + encodeURIComponent(filename);
-        const url = `${baseUrl}${filePath}?_secret=${encodeURIComponent(siteSecret)}`;
+        const { siteSecret, $route: { query: { path } } } = this;
+        const { n } = file;
+        const queries = { _secret: siteSecret };
+        const baseUrl = PathUtils.getBaseUrl();
+        const url = baseUrl + '/' + PathUtils.buildImageUrl(path as string, n, queries);
         window.open(url);
       }
     }

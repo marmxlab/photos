@@ -38,6 +38,7 @@
   import {Component, Prop, Vue, Watch} from "vue-property-decorator";
   import FileEntry from "../models/FileEntry";
   import FileUtil from "../utils/File";
+  import PathUtils from "../utils/Path";
 
   @Component
   export default class MediaCarousel extends Vue {
@@ -61,11 +62,10 @@
     }
 
     getSrc(file: FileEntry): string {
-      const { query: { path } } = this.$route;
-      const { secret } = this;
+      const { secret, $route: { query: { path } } } = this;
       const { n } = file;
-      const filePath = (path === '/' ? '' : (path as string).substr(1) + '/') + encodeURIComponent(n);
-      return '/images/' + filePath + (secret ? `?_secret=${encodeURIComponent(secret)}` : '');
+      const queries = { _secret: secret };
+      return PathUtils.buildImageUrl(path as string, n, queries)
     }
 
     isImage(file: FileEntry): boolean {
