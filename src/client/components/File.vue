@@ -85,7 +85,9 @@
       const MAX_TIMEOUT = 5000;
       const randomTimeout =  Math.floor(Math.random() * (MAX_TIMEOUT - MIN_TIMEOUT)) + MIN_TIMEOUT;
       setTimeout(() => {
-        (this.$refs.img as any).loadImage();
+        if (this.$refs.img) {
+          (this.$refs.img as any).loadImage();
+        }
       }, randomTimeout)
     }
   }
