@@ -28,13 +28,15 @@ export default class FileUtils {
   }
 
   static convertRelativePathToAbsolute(basePath: string, rPath: string) {
-    return basePath + (rPath === '/' ? '' : rPath);
+    return basePath + (rPath.endsWith('/') ? rPath.slice(0, -1) : rPath);
   }
 
-  static mkdirIfNotExist(aPath: string) {
+  static mkdirIfNotExist(aPath: string): boolean {
     if (!fs.existsSync(aPath)) {
       fs.mkdirSync(aPath);
+      return true;
     }
+    return false;
   }
 
   static getFileList(aPath: string): Promise<Dirent[]> {

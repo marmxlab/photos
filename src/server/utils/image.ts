@@ -16,16 +16,18 @@ export default class ImageUtils {
     const srcFolderPath = FileUtils.convertRelativePathToAbsolute(FileUtils.getRootFolderPath(), rPath);
     const thumbnailFolderPath = FileUtils.convertRelativePathToAbsolute(FileUtils.getThumbnailFolderPath(), rPath);
 
+    const thumbnailFolderExists = !FileUtils.mkdirIfNotExist(thumbnailFolderPath);
+
     const tasks = [
-      fs.promises.readdir(thumbnailFolderPath).catch(() => [] as string[]),
+      thumbnailFolderExists ? fs.promises.readdir(thumbnailFolderPath) : Promise.resolve([]),
       dirents ? Promise.resolve(dirents) : fs.promises.readdir(srcFolderPath, { withFileTypes: true })
     ];
 
-    Promise.all(tasks)
+    return Promise.all(tasks)
       .then(([thumbnails, ds]) => {
         return Promise.all(
           ds
-            .filter((d: Dirent) => thumbnails.indexOf(`${d.name}.jpg`) === -1)
+            .filter((d: Dirent) => thumbnails.indexOf(`${d.name}.jpg`) === -1 && !d.isDirectory())
             .map((d: Dirent) => new Promise((resolve) => {
               const fileAPath = `${srcFolderPath}/${d.name}`;
               const fileMIME = mime.lookup(fileAPath);
