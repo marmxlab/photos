@@ -1,9 +1,14 @@
+import path from 'path';
 import FileUtils from "./utils/file";
 
 require('dotenv').config();
 
 if (!process.env.ROOT_FOLDER || !process.env.THUMBNAIL_FOLDER) {
   throw new Error('ROOT_FOLDER and THUMBNAIL_FOLDER must be specified in environment variables.')
+}
+
+if (path.resolve(process.env.ROOT_FOLDER) === path.resolve(process.env.THUMBNAIL_FOLDER)) {
+  throw new Error('ROOT_FOLDER and THUMBNAIL_FOLDER cannot be the same.')
 }
 
 import Koa, {Context} from "koa";
