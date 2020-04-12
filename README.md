@@ -117,12 +117,13 @@ contains your media files that you want to share. For example: /Users/user/Pictu
 - Change ``${THUMBNAIL_PATH}`` in the ``volumes`` section in the `docker-compose.yml` to the path of the folder that 
 stores all the generated thumbnails. For example: /Users/user/Pictures/.thumbnails
 
-3\. If you wish to change the port number that the server listens on, change `ports` section in
-the `docker-compose.yml`. For example: `- "80:3000"`.
-
+3\. Change configurations according to your needs. Check Configuration section for more details.
+    If you wish to change the port number that the server listens on, change `ports` section in the 
+    `docker-compose.yml`. For example, to change the port to 80: 
+    
 ````
     ports:
-      - "3000:3000"
+      - "80:3000"
 ````
 
 4\. Run the following command in the directory where you saved your docker-compose.yml to start the software.
