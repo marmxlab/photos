@@ -1,4 +1,4 @@
-#Photos
+# Photos
 
 A simple, easy-to-use, web-based and self-hosted photo sharing system.
 
