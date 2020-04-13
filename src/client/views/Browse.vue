@@ -199,7 +199,7 @@
         const { n } = file;
         const queries = { _secret: siteSecret };
         const baseUrl = PathUtils.getBaseUrl();
-        const url = baseUrl + '/' + PathUtils.buildImageUrl(path as string, n, queries);
+        const url = baseUrl + PathUtils.buildImageUrl(path as string, n, queries);
         window.open(url);
       }
     }

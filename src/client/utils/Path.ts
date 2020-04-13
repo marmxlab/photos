@@ -1,7 +1,7 @@
 export default class PathUtils {
   public static getBaseUrl() {
     const { origin, pathname } = window.location;
-    return `${origin}${pathname === '/' ? '' : pathname}`;
+    return `${origin}${pathname === '/' ? '' : (pathname.endsWith('/') ? pathname.slice(0, -1) : pathname)}`;
   }
 
   public static buildThumbnailUrl(path: string, filename: string, queries?: { [key: string]: string }) {
