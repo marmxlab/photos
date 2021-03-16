@@ -6,7 +6,7 @@ A simple, easy-to-use, web-based and self-hosted photo sharing system.
 
 I stored a lot of pictures and videos that I took on my Ubuntu server. Since there is no GUI on the server, it was very 
 difficult for me to review them and share them with other people. This is why I wanted to build a software that can be easily 
-setup and uses the browsers as the GUI of it. 
+set up.
 
 ---
 
